@@ -1,0 +1,9 @@
+setup.cfg
+setup.py
+hjelmare/__init__.py
+hjelmare.egg-info/PKG-INFO
+hjelmare.egg-info/SOURCES.txt
+hjelmare.egg-info/dependency_links.txt
+hjelmare.egg-info/entry_points.txt
+hjelmare.egg-info/not-zip-safe
+hjelmare.egg-info/top_level.txt
