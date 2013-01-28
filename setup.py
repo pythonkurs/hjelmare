@@ -16,9 +16,14 @@ Testing Python""",
       license='GPLv3',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
+      scripts = ['scripts/getting_data.py'],
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
+          # Project uses XML parsing, so ensure that the untangle get installed or upgraded on the target machine
+          # Project uses GET to access a webservice
+          'untangle>=1.1.0',
+          'requests>=1.1.0'
       ],
       entry_points="""
       # -*- Entry points: -*-
