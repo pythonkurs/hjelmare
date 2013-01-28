@@ -1,4 +1,4 @@
-#
+# Gets the NYC escalator outage data from a webservice. Then calculates the fraction that are out for repairs.
 import untangle, requests
 def fraction_repairs():
     r = requests.get("http://www.grandcentral.org/developers/data/nyct/nyct_ene.xml")
