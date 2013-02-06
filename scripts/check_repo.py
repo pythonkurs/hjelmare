@@ -1,7 +1,14 @@
 from hjelmare.session3 import CourseRepo, ChangeDir
 import os, sys
 #This script should take an argument which is the absolute path to a repository.
+if len(sys.argv) != 2:
+    print("You should give one argument which should be the absolute path to the directory of interest.")
+    sys.exit()
 path = sys.argv[1]
+if not os.path.exists(path):
+    print(path+" is not a correct absolute path.")
+    sys.exit()
+
 path_final = os.path.basename(os.path.normpath(path))
 
 
