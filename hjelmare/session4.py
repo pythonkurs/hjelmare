@@ -21,10 +21,10 @@ def get_request(uri, user, path_to_secret):
 
 
 #Function should return a DataFrame
-def github_repo(secret):
+def github_repo(path_to_secret):
 
-    users = get_request("https://api.github.com/orgs/pythonkurs/members", "MartinHjelmare", secret)
-    repos = get_request("https://api.github.com/orgs/pythonkurs/repos", "MartinHjelmare", secret)
+    users = get_request("https://api.github.com/orgs/pythonkurs/members", "MartinHjelmare", path_to_secret)
+    repos = get_request("https://api.github.com/orgs/pythonkurs/repos", "MartinHjelmare", path_to_secret)
 
     users_data = users.json()
 
@@ -44,24 +44,37 @@ def github_repo(secret):
         repo_list[i] = repo['full_name']
         #Print all repos in the org
         print(repo_list[i])
-        all_repos_commits[i] = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", secret)
+        all_repos_commits[i] = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", path_to_secret)
         commits_data = all_repos_commits[i].json()
+        j = 0
         for commit in commits_data:
             date = commit['commit']['committer']['date']
+            date_list = [len(commits_data)]
+            date_list[j] = date
             message = commit['commit']['message']
+            message_list = [len(commits_data)]
+            message_list[j] = message
             #Print all messages per date made sorted per repo in the org
             print(date+" : "+message)
-        i++
+            j += 1
+        s = Series(message_list, index=date_list, name=repo['full_name'])
+        d = {s}
+        d.update(s)
+        i += 1
+    df = DataFrame(d)
 
-s = Series(["A commit message"] * 5, index=date_list, name="A repo")
+    return df
 
-d = {'one' : Series([1., 2., 3.], index=['a', 'b', 'c']), \
-     'two' : Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
 
-df = DataFrame(d)
-df
+#s = Series(["A commit message"] * 5, index=date_list, name="A repo")
 
-#return DataFrame
+#d = {'one' : Series([1., 2., 3.], index=['a', 'b', 'c']), \
+#     'two' : Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
+
+#df = DataFrame(d)
+#df
+
+
 
 
 
