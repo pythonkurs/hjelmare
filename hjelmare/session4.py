@@ -1,23 +1,14 @@
-import requests, datetime, getpass, sys
+import requests, datetime, getpass
 from dateutil import parser
 from pandas import DataFrame, Series
 
-
-#Try to use this promt instead of reading pass from file.
-#p = getpass.getpass(stream=sys.stderr)
-
-#path_to_secret
-#pass the path to the credentials as an argument when calling the github_repo function
-
-#Function to get the users GitHub password
+#Function to get the user's GitHub password
 def get_password():
     password = getpass.getpass("Enter your GitHub password: ")
     return password
 
 #Function for GET with exception catching
 def get_request(uri, user, password):
-    #with open(path_to_secret) as secret:
-        #password = secret.read().strip()
     try:
         request = requests.get(uri, auth=(user, password))
     except requests.ConnectionError:
@@ -54,7 +45,6 @@ def github_repo():
         repo_list.append(repo['full_name'])
         #Print all repos in the org
         print(repo_list[i])
-        #import pdb; pdb.set_trace()
         all_repos_commits.append(get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", password))
         commits_data = all_repos_commits[i].json()
         j = 0
@@ -68,9 +58,11 @@ def github_repo():
             #Print all messages per date made sorted per repo in the org
             print(date+" : "+message)
             j += 1
+        import pdb; pdb.set_trace()
         s = Series(message_list, index=date_list, name=repo['full_name'])
-        d = {s}
-        d.update(s)
+        d = {}
+        d[repo['full_name']] = s
+        #d.update(s)
         i += 1
     df = DataFrame(d)
 
@@ -115,4 +107,4 @@ def github_repo():
 
 
 
-#A function which takes a DataFrame as argument and returns the weekday and hour of a day
+#A function which takes a DataFrame as argument and returns the weekday and hour of a day when most commits have been made
