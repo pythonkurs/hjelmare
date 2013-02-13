@@ -15,8 +15,11 @@ def get_request(uri, user, password):
         print("Got connection error. Check network.")
         sys.exit()
     if not request.status_code == 200:
-        print("Webserver error, status code: "+str(request.status_code)+". Try again later.")
-        sys.exit()
+        if not request.status_code == 409:
+            print("Webserver error, status code: "+str(request.status_code)+". Try again later.")
+            sys.exit()
+        else:
+            pass
     return request
 
 
@@ -58,11 +61,10 @@ def github_repo():
             #Print all messages per date made sorted per repo in the org
             print(date+" : "+message)
             j += 1
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         s = Series(message_list, index=date_list, name=repo['full_name'])
         d = {}
         d[repo['full_name']] = s
-        #d.update(s)
         i += 1
     df = DataFrame(d)
 
@@ -108,3 +110,6 @@ def github_repo():
 
 
 #A function which takes a DataFrame as argument and returns the weekday and hour of a day when most commits have been made
+def social_log():
+    df = github_repo()
+    print(df)
