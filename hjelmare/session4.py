@@ -1,14 +1,23 @@
-import requests, datetime
+import requests, datetime, getpass, sys
 from dateutil import parser
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 
+#Try to use this promt instead of reading pass from file.
+#p = getpass.getpass(stream=sys.stderr)
+
+#path_to_secret
 #pass the path to the credentials as an argument when calling the github_repo function
 
+#Function to get the users GitHub password
+def get_password():
+    password = getpass.getpass("Enter your GitHub password: ")
+    return password
+
 #Function for GET with exception catching
-def get_request(uri, user, path_to_secret):
-    with open(path_to_secret) as secret:
-        password = secret.read().strip()
+def get_request(uri, user, password):
+    #with open(path_to_secret) as secret:
+        #password = secret.read().strip()
     try:
         request = requests.get(uri, auth=(user, password))
     except requests.ConnectionError:
@@ -21,10 +30,11 @@ def get_request(uri, user, path_to_secret):
 
 
 #Function should return a DataFrame
-def github_repo(path_to_secret):
+def github_repo():
 
-    users = get_request("https://api.github.com/orgs/pythonkurs/members", "MartinHjelmare", path_to_secret)
-    repos = get_request("https://api.github.com/orgs/pythonkurs/repos", "MartinHjelmare", path_to_secret)
+    password = get_password()
+    users = get_request("https://api.github.com/orgs/pythonkurs/members", "MartinHjelmare", password)
+    repos = get_request("https://api.github.com/orgs/pythonkurs/repos", "MartinHjelmare", password)
 
     users_data = users.json()
 
@@ -36,24 +46,25 @@ def github_repo(path_to_secret):
     #Print the number of repos in the org
     print("There are "+str(len(repos_data))+" repos in the organization.")
 
-    all_repos_commits = [len(repos_data)]
-    repo_list = [len(repos_data)]
-    
+    all_repos_commits = []
+    repo_list = []
+
     i = 0
     for repo in repos_data:
-        repo_list[i] = repo['full_name']
+        repo_list.append(repo['full_name'])
         #Print all repos in the org
         print(repo_list[i])
-        all_repos_commits[i] = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", path_to_secret)
+        #import pdb; pdb.set_trace()
+        all_repos_commits.append(get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", password))
         commits_data = all_repos_commits[i].json()
         j = 0
+        date_list = []
+        message_list = []
         for commit in commits_data:
             date = commit['commit']['committer']['date']
-            date_list = [len(commits_data)]
-            date_list[j] = date
+            date_list.append(date)
             message = commit['commit']['message']
-            message_list = [len(commits_data)]
-            message_list[j] = message
+            message_list.append(message)
             #Print all messages per date made sorted per repo in the org
             print(date+" : "+message)
             j += 1
