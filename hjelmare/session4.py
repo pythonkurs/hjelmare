@@ -6,6 +6,11 @@ from dateutil import parser
 from pandas import DataFrame
 from pandas import Series
 
+# Function to get the user's GitHub username
+def get_username():
+    username = raw_input("Enter your GitHub username: ")
+    return username
+
 # Function to get the user's GitHub password
 def get_password():
     password = getpass.getpass("Enter your GitHub password: ")
@@ -30,10 +35,11 @@ def get_request(uri, user, password):
 # Function should return a DataFrame
 def github_repo():
 
+    username = get_username()
     password = get_password()
 
-    users = get_request("https://api.github.com/orgs/pythonkurs/members", "MartinHjelmare", password)
-    repos = get_request("https://api.github.com/orgs/pythonkurs/repos", "MartinHjelmare", password)
+    users = get_request("https://api.github.com/orgs/pythonkurs/members", username, password)
+    repos = get_request("https://api.github.com/orgs/pythonkurs/repos", username, password)
     users_data = users.json()
     repos_data = repos.json()
 
@@ -48,7 +54,7 @@ def github_repo():
     for repo in repos_data:
         # Print all repos in the org
         print(repo['full_name'])
-        commits_data = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", password).json()
+        commits_data = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", username, password).json()
         date_list = []
         message_list = []
         for commit in commits_data:
@@ -68,45 +74,6 @@ def github_repo():
     df = DataFrame(d)
 
     return df
-
-
-#s = Series(["A commit message"] * 5, index=date_list, name="A repo")
-
-#d = {'one' : Series([1., 2., 3.], index=['a', 'b', 'c']), \
-#     'two' : Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
-
-#df = DataFrame(d)
-#df
-
-
-
-
-
-
-#List repositories for the specified org.
-#working
-#GET /orgs/:org/repos
-#https://api.github.com/orgs/pythonkurs/repos
-#org_repos = requests.get("https://api.github.com/orgs/pythonkurs/repos", auth=("MartinHjelmare", password))
-
-#List commits for the specified repo.
-#working
-#/repos/:owner/:repo/commits
-#https://api.github.com/repos/pythonkurs/hjelmare/commits
-#org_commits = requests.get("https://api.github.com/repos/pythonkurs/hjelmare/commits", auth=("MartinHjelmare", password))
-
-#working
-#/orgs/:org/events
-#https://api.github.com/orgs/pythonkurs/events
-#public_events = requests.get("https://api.github.com/orgs/pythonkurs/events", auth=("MartinHjelmare", password))
-
-#working
-#/users/:user/events/orgs/:org
-#https://api.github.com/users/MartinHjelmare/events/orgs/pythonkurs
-#events = requests.get("https://api.github.com/users/MartinHjelmare/events/orgs/pythonkurs", auth=("MartinHjelmare", password))
-
-
-
 
 # Function which takes a DataFrame as argument and returns the weekday and hour of a day when most commits have been made.  
 def social_log():
