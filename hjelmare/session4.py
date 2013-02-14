@@ -1,13 +1,17 @@
-import requests, datetime, getpass
-from dateutil import parser
-from pandas import DataFrame, Series
+import datetime
+import getpass
+import requests
 
-#Function to get the user's GitHub password
+from dateutil import parser
+from pandas import DataFrame
+from pandas import Series
+
+# Function to get the user's GitHub password
 def get_password():
     password = getpass.getpass("Enter your GitHub password: ")
     return password
 
-#Function for GET with exception catching
+# Function for GET with exception catching
 def get_request(uri, user, password):
     try:
         request = requests.get(uri, auth=(user, password))
@@ -23,49 +27,44 @@ def get_request(uri, user, password):
     return request
 
 
-#Function should return a DataFrame
+# Function should return a DataFrame
 def github_repo():
 
     password = get_password()
+
     users = get_request("https://api.github.com/orgs/pythonkurs/members", "MartinHjelmare", password)
     repos = get_request("https://api.github.com/orgs/pythonkurs/repos", "MartinHjelmare", password)
-
     users_data = users.json()
-
-    #Print the number of users in the org
-    print("There are "+str(len(users_data))+" users in the organization.")
-    
     repos_data = repos.json()
 
-    #Print the number of repos in the org
+    # Print the number of users in the org.  
+    print("There are "+str(len(users_data))+" users in the organization.")
+
+    # Print the number of repos in the org.  
     print("There are "+str(len(repos_data))+" repos in the organization.")
 
-    all_repos_commits = []
-    repo_list = []
+    d = {}
 
-    i = 0
     for repo in repos_data:
-        repo_list.append(repo['full_name'])
-        #Print all repos in the org
-        print(repo_list[i])
-        all_repos_commits.append(get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", password))
-        commits_data = all_repos_commits[i].json()
-        j = 0
+        # Print all repos in the org
+        print(repo['full_name'])
+        commits_data = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", "MartinHjelmare", password).json()
         date_list = []
         message_list = []
         for commit in commits_data:
-            date = commit['commit']['committer']['date']
-            date_list.append(date)
-            message = commit['commit']['message']
-            message_list.append(message)
-            #Print all messages per date made sorted per repo in the org
-            print(date+" : "+message)
-            j += 1
-        #import pdb; pdb.set_trace()
+            try:
+                date = commit['commit']['committer']['date']
+                message = commit['commit']['message']
+                date_list.append(date)
+                message_list.append(message)
+                # Print all messages per date made sorted per repo in the org
+                #print(date+" : "+message)
+            except TypeError:
+                print(commits_data['message'])
+        # import pdb; pdb.set_trace()
         s = Series(message_list, index=date_list, name=repo['full_name'])
-        d = {}
         d[repo['full_name']] = s
-        i += 1
+
     df = DataFrame(d)
 
     return df
@@ -109,7 +108,7 @@ def github_repo():
 
 
 
-#A function which takes a DataFrame as argument and returns the weekday and hour of a day when most commits have been made
+# Function which takes a DataFrame as argument and returns the weekday and hour of a day when most commits have been made.  
 def social_log():
     df = github_repo()
     print(df)
