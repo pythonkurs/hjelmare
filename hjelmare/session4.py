@@ -59,14 +59,16 @@ def github_repo():
         message_list = []
         for commit in commits_data:
             try:
+                message = str(commit['commit']['message'])
                 date = commit['commit']['committer']['date']
-                message = commit['commit']['message']
-                date_list.append(date)
+                date_time = parser.parse(date)
+                date_time = date_time.replace(tzinfo=None)
+                date_list.append(date_time)
                 message_list.append(message)
                 # Print all messages per date made sorted per repo in the org
                 #print(date+" : "+message)
             except TypeError:
-                print(commits_data['message'])
+                print(commits_data['message']+" @ "+repo['full_name'])
         # import pdb; pdb.set_trace()
         s = Series(message_list, index=date_list, name=repo['full_name'])
         d[repo['full_name']] = s
@@ -75,7 +77,9 @@ def github_repo():
 
     return df
 
-# Function which takes a DataFrame as argument and returns the weekday and hour of a day when most commits have been made.  
+# Function which takes a DataFrame as argument and prints the weekday and hour of a day when most commits have been made.  
 def social_log():
     df = github_repo()
+    #date_time.isoweekday()
+    #date_time.hour
     print(df)
