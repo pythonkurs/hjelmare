@@ -3,6 +3,7 @@ import getpass
 import requests
 import sys
 
+from collections import Counter
 from dateutil import parser
 from pandas import DataFrame
 from pandas import Series
@@ -33,7 +34,7 @@ def get_request(uri, user, password):
     return request
 
 
-# Function should return a DataFrame
+  # Function should return a DataFrame
 def github_repo():
 
     username = get_username()
@@ -44,16 +45,16 @@ def github_repo():
     users_data = users.json()
     repos_data = repos.json()
 
-    # Print the number of users in the org.  
+  # Print the number of users in the org.  
     print("There are "+str(len(users_data))+" users in the organization.")
 
-    # Print the number of repos in the org.  
+  # Print the number of repos in the org.  
     print("There are "+str(len(repos_data))+" repos in the organization.")
 
     d = {}
 
     for repo in repos_data:
-        # Print all repos in the org
+  # Print all repos in the org
         print(repo['full_name'])
         commits_data = get_request("https://api.github.com/repos/"+repo['full_name']+"/commits", username, password).json()
         date_list = []
@@ -66,21 +67,23 @@ def github_repo():
                 date_time = date_time.replace(tzinfo=None)
                 date_list.append(date_time)
                 message_list.append(message)
-                # Print all messages per date made sorted per repo in the org
-                #print(date+" : "+message)
             except TypeError:
                 print(commits_data['message']+" @ "+repo['full_name'])
-        # import pdb; pdb.set_trace()
-        s = Series(message_list, index=date_list, name=repo['full_name'])
-        d[repo['full_name']] = s
+        if not repo['full_name'] == "pythonkurs/lotstedt":
+            s = Series(message_list, index=date_list, name=repo['full_name'])
+  # Print the series of commits with dates and messages.
+            print(s)
+            d[repo['full_name']] = s
 
     df = DataFrame(d)
 
     return df
 
-# Function which takes a DataFrame as argument and prints the weekday and hour of a day when most commits have been made.  
+# Function which takes a DataFrame and prints the weekday and hour of a day when most commits have been made.  
 def social_log():
     df = github_repo()
-    #date_time.isoweekday()
-    #date_time.hour
-    print(df)
+    dates = df.index
+    count_weekday_hour = Counter()
+    for date in dates:
+        count_weekday_hour[date.strftime("%A")+" @ "+str(date.hour)] += 1
+    print(count_weekday_hour.most_common(1))
