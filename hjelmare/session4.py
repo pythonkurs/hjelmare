@@ -86,4 +86,5 @@ def social_log():
     count_weekday_hour = Counter()
     for date in dates:
         count_weekday_hour[date.strftime("%A")+" @ "+str(date.hour)] += 1
-    print(count_weekday_hour.most_common(1))
+    most_commits = count_weekday_hour.most_common(1)
+    print(Counter(dict(most_commits)).keys())
