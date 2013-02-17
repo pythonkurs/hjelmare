@@ -69,10 +69,7 @@ def github_repo():
                 message_list.append(message)
             except TypeError:
                 print(commits_data['message']+" @ "+repo['full_name'])
-        if not repo['full_name'] == "pythonkurs/lotstedt":
             s = Series(message_list, index=date_list, name=repo['full_name'])
-  # Print the series of commits with dates and messages.
-            print(s)
             d[repo['full_name']] = s
 
     df = DataFrame(d)
@@ -87,4 +84,4 @@ def social_log():
     for date in dates:
         count_weekday_hour[date.strftime("%A")+" @ "+str(date.hour)] += 1
     most_commits = count_weekday_hour.most_common(1)
-    print("Most commits in the organisation were made on "+str(Counter(dict(most_commits)).keys()))
+    print("Most commits in the organization were made on "+str(Counter(dict(most_commits)).keys()))
