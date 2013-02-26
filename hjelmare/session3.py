@@ -27,7 +27,8 @@ class CourseRepo(object):
     def surname(self, value):
         self.name = value
         self.required = [".git", "setup.py", "README.md", "scripts/getting_data.py", "scripts/check_repo.py", self.name+"/__init__.py", self.name+"/session3.py"]
-
+    
+    @profile
     def check(self):
 
         # if all directories or files exist
