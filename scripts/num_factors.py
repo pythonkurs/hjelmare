@@ -1,6 +1,7 @@
 import sys
 
 from collections import defaultdict
+from collections import Counter
 
 #The script should print a dictionary
 #This script should take an argument which is a character.
@@ -38,14 +39,10 @@ integers = range(2, 500001)
 
 if control_char == "s":
     for integer in integers:
-        unique_count = 1
         factors = (factorize(integer))
+        count = Counter(factors)
+        unique_count = len(count)
         #print(factors)
-        old_factor = factors[0]
-        for factor in factors:
-            if not factor == old_factor:
-                unique_count += 1
-            old_factor = factor
         #print(unique_count)
         histogram[unique_count] += 1
     print(histogram)
@@ -60,8 +57,3 @@ else:
 
 #if control_char == "i":
 
-#try:
-#    factorize(integer)
-#except TypeError:
-#    print("You should give one argument which should be an integer.")
-#    sys.exit()
