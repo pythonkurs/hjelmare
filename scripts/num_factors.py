@@ -9,7 +9,7 @@ from IPython.parallel import Client
 
 # The script should print a dictionary.
 # This script should take an argument which is a character controlling how the script will run.
-# Remember to start the cluster if using the IPython parallel method.
+# Remember to start the cluster before running the script.
 if len(sys.argv) != 2:
     print("You should give one argument which should be a character, s, m or i, which will determine how the script will run. Serially (s), with multiprocessing (m) or with IPython parallel (i).")
     sys.exit()
